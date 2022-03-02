@@ -9,6 +9,7 @@ const StyledMain = styled.main`
   padding-left: 15px;
   padding-top: 15px;
 `;
+// famous
 function Main() {
   const initialState: any = localStorage.getItem('tasks')
     ? Array.from(JSON.parse(localStorage.getItem('tasks')!))
