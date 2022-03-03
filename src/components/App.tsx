@@ -26,6 +26,7 @@ function App() {
         display={userName !== '' ? 'none' : 'block'}
         title="Enter your Name"
       />
+
       <Header title="oreGairu" />
       <Main />
     </>

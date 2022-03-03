@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { StyledPopupProps, modalProps } from '../types/popupType';
 
-type modalProps = {
-  title: string;
-  display: string;
-  setUserName: (username: string) => void;
-};
-type ModalWrapperProps = {
-  display: string;
-};
 const ModalWrapper = styled.div`
   position: fixed;
-  display: ${(props: ModalWrapperProps) => props.display};
+  display: ${(props: StyledPopupProps) => props.display};
   bottom: 0;
   left: 0;
   right: 0;

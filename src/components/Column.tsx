@@ -2,12 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import plus from '../img/plus.svg';
 import cross from '../img/cross.svg';
-import taskType from '../types/taskType';
-
-type ColumnProps = {
-  target: taskType;
-  addCard: (card: string, id: number) => void;
-};
+import commentImage from '../img/comment.png';
+import columnProps from '../types/columnProps';
 const StyledColumn = styled.div`
   border-radius: 15px;
   min-width: 273px;
@@ -146,23 +142,55 @@ const CardListItem = styled.div`
   border-radius: 10px;
   min-height: 60px;
   margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: space-between;
 `;
-function Column(props: ColumnProps) {
+const CardListItemTitle = styled.div`
+  font-family: 'Balsamiq Sans', cursive;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  color: #0b97dc;
+  padding: 5px;
+`;
+const CardBottom = styled.div`
+  display: flex;
+  padding: 5px 5px;
+  align-items: center;
+`;
+const CommentImage = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 3px;
+`;
+const CommentCount = styled.div`
+  font-family: 'Balsamiq Sans', cursive;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 15px;
+  color: #e1528d;
+`;
+function Column(props: columnProps) {
   // const [id] = useState<number>(props.target.id);
   const [iSaddedTo, setIsAddedTo] = useState<boolean>();
-  const [cardName, setCardName] = useState<string>('');
-  const textAreaHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCardName(e.currentTarget.value);
-  };
 
   return (
     <StyledColumn>
       <TitleWrapper>
-        <Title>{props.target.title}</Title>
+        <Title>{props.title}</Title>
       </TitleWrapper>
       <CardList>
-        {props.target.cards.map((elem) => {
-          return <CardListItem key={elem.id}>{elem.title}</CardListItem>;
+        {props.cards.map((elem) => {
+          return (
+            <CardListItem key={elem.id}>
+              <CardListItemTitle>{elem.title}</CardListItemTitle>
+              <CardBottom>
+                <CommentImage src={commentImage} />
+                <CommentCount>{elem.comments.length}</CommentCount>
+              </CardBottom>
+            </CardListItem>
+          );
         })}
       </CardList>
       {!iSaddedTo ? (
@@ -172,16 +200,18 @@ function Column(props: ColumnProps) {
         </AddCardWrapper>
       ) : (
         <AddingACard>
-          <CardTitle placeholder="Enter the title" onChange={textAreaHandler} value={cardName} />
+          <CardTitle
+            placeholder="Enter the title"
+            onChange={props.textAreaHandler}
+            value={props.cardName}
+          />
           <AddingACardButtonWrapper>
-            <AddingACardButton onClick={() => props.addCard(cardName, props.target.id)}>
-              Add card
-            </AddingACardButton>
+            <AddingACardButton onClick={props.AddCardButtonHandler}>Add card</AddingACardButton>
             <CloseButton
               src={cross}
               onClick={() => {
                 setIsAddedTo(false);
-                setCardName('');
+                props.setCardName('');
               }}
             />
           </AddingACardButtonWrapper>

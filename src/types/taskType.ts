@@ -1,15 +1,15 @@
-type commentType = {
-  id: number;
+export type commentType = {
+  id: string;
   username: string;
   message: string;
 };
-type cardType = {
-  id: number;
+export type cardType = {
+  id: string;
   title: string;
   comments: Array<commentType>;
 };
-type taskType = {
-  id: number;
+export type taskType = {
+  id: string;
   title: string;
   cards: Array<cardType>;
 };

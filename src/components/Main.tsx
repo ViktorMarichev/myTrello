@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Column from './Column';
+import ColumnContainer from './ColumnContainer';
 import Container from './Container';
 import taskType from '../types/taskType';
 
@@ -22,10 +22,10 @@ function Main() {
   const initialState: any = localStorage.getItem('tasks')
     ? Array.from(JSON.parse(localStorage.getItem('tasks')!))
     : [
-        { id: 0, title: 'TODO', cards: [] },
-        { id: 1, title: 'In Progress', cards: [] },
-        { id: 2, title: 'Testing', cards: [] },
-        { id: 3, title: 'Done', cards: [] },
+        { id: '0', title: 'TODO', cards: [] },
+        { id: '1', title: 'In Progress', cards: [] },
+        { id: '2', title: 'Testing', cards: [] },
+        { id: '3', title: 'Done', cards: [] },
       ];
   useEffect(() => {
     if (localStorage.getItem('tasks') === null)
@@ -33,17 +33,28 @@ function Main() {
     console.log(localStorage.getItem('tasks'));
   }, []);
   const [tasks, setTasks] = useState<Array<taskType>>(initialState);
-  const addCardHandler = (card: string, id: number) => {
-    const storageСopy: Array<taskType> = Array.from(JSON.parse(localStorage.getItem('tasks')!)!);
-    const index = storageСopy.findIndex((task) => task.id === id);
-    storageСopy[index].cards.push({ id: storageСopy.length + 1, title: card, comments: [] });
-    localStorage.setItem('tasks', JSON.stringify(storageСopy));
-    setTasks(storageСopy);
-  };
+  function generateId(array: Array<taskType>) {
+    const id = Math.random().toString(36).substr(2, 9);
+
+    if (array.find((x) => x.id === id) == undefined) {
+      return id;
+    } else {
+      generateId(array);
+    }
+  }
+
   return (
     <StyledMain>
       {tasks.map((elem) => {
-        return <Column key={elem.id} target={elem} addCard={addCardHandler} />;
+        return (
+          <ColumnContainer
+            key={elem.id}
+            target={elem}
+            tasks={tasks}
+            setTasks={setTasks}
+            generateId={generateId}
+          />
+        );
       })}
     </StyledMain>
   );
