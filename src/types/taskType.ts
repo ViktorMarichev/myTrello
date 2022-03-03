@@ -7,6 +7,7 @@ export type cardType = {
   id: string;
   title: string;
   comments: Array<commentType>;
+  description: string;
 };
 export type taskType = {
   id: string;

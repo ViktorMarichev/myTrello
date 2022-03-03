@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import plus from '../img/plus.svg';
 import cross from '../img/cross.svg';
-import commentImage from '../img/comment.png';
 import columnProps from '../types/columnProps';
+import Card from './Card';
 const StyledColumn = styled.div`
   border-radius: 15px;
   min-width: 273px;
@@ -137,40 +137,7 @@ const CardList = styled.div`
   justify-content: flex-start;
   flex-direction: column;
 `;
-const CardListItem = styled.div`
-  background-color: white;
-  border-radius: 10px;
-  min-height: 60px;
-  margin-bottom: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: space-between;
-`;
-const CardListItemTitle = styled.div`
-  font-family: 'Balsamiq Sans', cursive;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 18px;
-  color: #0b97dc;
-  padding: 5px;
-`;
-const CardBottom = styled.div`
-  display: flex;
-  padding: 5px 5px;
-  align-items: center;
-`;
-const CommentImage = styled.img`
-  width: 20px;
-  height: 20px;
-  margin-right: 3px;
-`;
-const CommentCount = styled.div`
-  font-family: 'Balsamiq Sans', cursive;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 15px;
-  color: #e1528d;
-`;
+
 function Column(props: columnProps) {
   // const [id] = useState<number>(props.target.id);
   const [iSaddedTo, setIsAddedTo] = useState<boolean>();
@@ -183,13 +150,13 @@ function Column(props: columnProps) {
       <CardList>
         {props.cards.map((elem) => {
           return (
-            <CardListItem key={elem.id}>
-              <CardListItemTitle>{elem.title}</CardListItemTitle>
-              <CardBottom>
-                <CommentImage src={commentImage} />
-                <CommentCount>{elem.comments.length}</CommentCount>
-              </CardBottom>
-            </CardListItem>
+            <Card
+              key={elem.id}
+              id={elem.id}
+              title={elem.title}
+              comentsCount={elem.comments.length}
+              onClick={props.cardClickHandler}
+            />
           );
         })}
       </CardList>

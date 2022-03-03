@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import ColumnContainer from './ColumnContainer';
 import Container from './Container';
 import taskType from '../types/taskType';
-
+import { currentCardType } from '../types/Card';
 const StyledMain = styled(Container)`
   display: flex;
   flex-wrap: no-wrap;
@@ -18,7 +18,10 @@ const StyledMain = styled(Container)`
   height: 100%;
 `;
 // comment
-function Main() {
+type mainProps = {
+  setCurrentCard: (currentCard: currentCardType) => void;
+};
+function Main(props: mainProps) {
   const initialState: any = localStorage.getItem('tasks')
     ? Array.from(JSON.parse(localStorage.getItem('tasks')!))
     : [
@@ -30,10 +33,9 @@ function Main() {
   useEffect(() => {
     if (localStorage.getItem('tasks') === null)
       localStorage.setItem('tasks', JSON.stringify(initialState));
-    console.log(localStorage.getItem('tasks'));
   }, []);
   const [tasks, setTasks] = useState<Array<taskType>>(initialState);
-  function generateId(array: Array<taskType>) {
+  function generateId(array: Array<any>) {
     const id = Math.random().toString(36).substr(2, 9);
 
     if (array.find((x) => x.id === id) == undefined) {
@@ -50,9 +52,9 @@ function Main() {
           <ColumnContainer
             key={elem.id}
             target={elem}
-            tasks={tasks}
             setTasks={setTasks}
             generateId={generateId}
+            setCurrentCard={props.setCurrentCard}
           />
         );
       })}

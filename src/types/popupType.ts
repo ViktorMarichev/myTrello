@@ -8,6 +8,7 @@ export type modalProps = {
   setUserName: (username: string) => void;
 };
 export type popupProps = {
-  display: string;
+  display: boolean;
   children: React.ReactNode;
+  onClose: () => void;
 };

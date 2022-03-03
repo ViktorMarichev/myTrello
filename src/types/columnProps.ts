@@ -7,5 +7,6 @@ type columnProps = {
   setCardName: (value: string) => void;
   AddCardButtonHandler: () => void;
   textAreaHandler: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  cardClickHandler: (id: string) => void;
 };
 export default columnProps;
