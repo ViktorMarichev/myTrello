@@ -49,7 +49,6 @@ const ModalTitle = styled.h1`
 `;
 const ModalInput = styled.input`
   background: #ffffff;
-  border: 1px solid #5c5c5c;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   border-radius: 10px;

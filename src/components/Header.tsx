@@ -4,7 +4,6 @@ import Container from './Container';
 import img from '../img/face.png';
 const StyledHeader = styled.header`
   width: 100%;
-  height: 60px;
   padding: 10px;
   box-sizing: border-box;
   display: flex;
