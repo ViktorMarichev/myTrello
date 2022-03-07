@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import Column from './Column';
 import taskType from '../types/taskType';
-import { cardType } from '../types/taskType';
-import { currentCardType } from '../types/Card';
+import { cardPositionType } from '../types/Card';
+import { tasksTool } from '../context/tasksTool';
 type ColumnContainerProps = {
+  columnId: string;
   target: taskType;
   setTasks: (arr: Array<taskType>) => void;
-  generateId: (arr: Array<cardType>) => any;
-  setCurrentCard: (currentCard: currentCardType) => void;
+  setCardPosition: (currentCard: cardPositionType) => void;
+  setAction: (s: string) => void;
+  username: string;
 };
 function ColumnContainer(props: ColumnContainerProps) {
   const [cardName, setCardName] = useState<string>('');
@@ -20,28 +22,27 @@ function ColumnContainer(props: ColumnContainerProps) {
     const storageСopy: Array<taskType> = Array.from(JSON.parse(localStorage.getItem('tasks')!)!);
     const index = storageСopy.findIndex((task) => task.id === id);
     storageСopy[index].cards.push({
-      id: props.generateId(storageСopy[index].cards),
+      id: tasksTool.generateId(storageСopy[index].cards)!,
       title: cardName,
       comments: [],
       description: '',
+      author: props.username,
     });
     localStorage.setItem('tasks', JSON.stringify(storageСopy));
     props.setTasks(storageСopy);
     setCardName('');
   };
-  const cardClickHandler = (id: string) => {
-    console.log('click' + id);
-    props.setCurrentCard({ cardId: id, taskId: props.target.id });
-  };
   return (
     <Column
+      id={props.target.id}
       cardName={cardName}
       setCardName={setCardName}
       textAreaHandler={textAreaHandler}
       AddCardButtonHandler={addCardHandler}
       title={props.target.title}
       cards={props.target.cards}
-      cardClickHandler={cardClickHandler}
+      cardClickHandler={props.setCardPosition}
+      setAction={props.setAction}
     />
   );
 }

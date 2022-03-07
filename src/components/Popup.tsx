@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { StyledPopupProps, popupProps } from '../types/popupType';
 import cross from '../img/cross.svg';
@@ -13,6 +13,7 @@ const PopupWrapper = styled.div`
   height: 100%;
   background: rgba(0 0 0 / 0.5);
   z-index: 10;
+  overflow-y: auto;
 `;
 const PopupBody = styled.div`
   position: relative;
@@ -26,7 +27,6 @@ const PopupBody = styled.div`
   padding: 0px 10px 10px 10px;
   border-radius: 10px;
   border: 1px solid gray;
-  max-height: 400px;
   overflow-y: none;
   box-sizing: border-box;
   box-shadow: 0px 15px 25px -5px rgba(darken(dodgerblue, 40%));
@@ -50,6 +50,16 @@ const ClosePopup = styled.img`
   }
 `;
 function Popup(props: popupProps) {
+  useEffect(() => {
+    const handler: any = document.addEventListener('keydown', (e: KeyboardEvent) => {
+      console.log(e.key);
+      if (e.key === 'Escape') {
+        props.onClose();
+        document.removeEventListener('keydown', handler, false);
+      }
+    });
+  }, []);
+
   return (
     <PopupWrapper display={props.display ? 'block' : 'none'}>
       <PopupBody>

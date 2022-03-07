@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import plus from '../img/plus.svg';
 import cross from '../img/cross.svg';
 import columnProps from '../types/columnProps';
-import Card from './Card';
+import CardContainer from './CardContainer';
+
 const StyledColumn = styled.div`
   border-radius: 15px;
   min-width: 273px;
@@ -61,8 +62,6 @@ const AddCardText = styled.div`
 `;
 const CardTitle = styled.textarea`
   background: #ffffff;
-  overflow-y: hidden;
-  height: auto;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   border-radius: 10px;
@@ -72,9 +71,13 @@ const CardTitle = styled.textarea`
   font-weight: normal;
   font-size: 18px;
   color: #e1528d !important;
-  line-height: 25px;
-  padding-left: 23px;
+  line-height: 20px;
+  border: 1px solid #242528;
+  padding: 10px;
+  min-height: 50px;
+  height: 35px;
   width: 100%;
+  overflow: hidden;
   resize: none;
   ::placeholder {
     color: #0b97dc;
@@ -141,7 +144,13 @@ const CardList = styled.div`
 function Column(props: columnProps) {
   // const [id] = useState<number>(props.target.id);
   const [iSaddedTo, setIsAddedTo] = useState<boolean>();
-
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  function resize(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    setTimeout(function () {
+      textAreaRef.current!.style.cssText = 'height:auto; padding:1';
+      textAreaRef.current!.style.cssText = 'height:' + textAreaRef.current!.scrollHeight + 'px';
+    }, 1);
+  }
   return (
     <StyledColumn>
       <TitleWrapper>
@@ -150,12 +159,13 @@ function Column(props: columnProps) {
       <CardList>
         {props.cards.map((elem) => {
           return (
-            <Card
+            <CardContainer
+              columnId={props.id}
               key={elem.id}
-              id={elem.id}
-              title={elem.title}
-              comentsCount={elem.comments.length}
-              onClick={props.cardClickHandler}
+              card={elem}
+              cardClickHandler={props.cardClickHandler}
+              columnName={props.title}
+              setAction={props.setAction}
             />
           );
         })}
@@ -168,9 +178,12 @@ function Column(props: columnProps) {
       ) : (
         <AddingACard>
           <CardTitle
+            onKeyPress={resize}
+            ref={textAreaRef}
             placeholder="Enter the title"
             onChange={props.textAreaHandler}
             value={props.cardName}
+            rows={1}
           />
           <AddingACardButtonWrapper>
             <AddingACardButton onClick={props.AddCardButtonHandler}>Add card</AddingACardButton>

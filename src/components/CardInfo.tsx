@@ -1,13 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
-import taskType, { cardType } from '../types/taskType';
-import { currentCardType } from '../types/Card';
+import { cardType } from '../types/taskType';
+import CommentsListContainer from './commentsListContainer';
+import spinner from '../img/spinner.gif';
+import { cardPositionType } from '../types/Card';
 type cardInfoProps = {
-  currentCard: currentCardType;
+  currentCard: cardType;
+  cardPosition: cardPositionType;
+  columnName: string;
+  isChangedDescription: boolean;
+  setIsChangedDescription: (b: boolean) => void;
+  userComment: string;
+  keyPressHandler: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  keyPressCommentHandler: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  setDescription: () => void;
 };
 const InfoBody = styled.div`
   background-color: white;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 const TitleWrapper = styled.div`
   padding: 10px 8px;
@@ -26,6 +39,7 @@ const Description = styled.textarea`
   background: #ffffff;
   overflow-y: hidden;
   height: auto;
+  min-height: 100px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   border-radius: 10px;
@@ -36,7 +50,7 @@ const Description = styled.textarea`
   font-size: 18px;
   color: #e1528d !important;
   line-height: 25px;
-  padding-left: 23px;
+  padding: 10px;
   width: 100%;
   resize: none;
   ::placeholder {
@@ -44,7 +58,6 @@ const Description = styled.textarea`
   }
 `;
 const SaveDescriptionButton = styled.button`
-width: 100%;
 height: 40px;
 justify-content: center;
 align-items: center;
@@ -72,58 +85,73 @@ background-color:#0a85c2;
   transform: scale(0.98);
 }
 `;
+const ButtonWrapper = styled.div`
+  padding: 5px;
+  font-family: 'Balsamiq Sans', cursive;
+  font-size: 15px;
+  width: 100%;
+`;
+const Spinner = styled.img`
+  width: 40px;
+  height: 40px;
+`;
+const ColumnName = styled.div`
+  width: 100%;
+  color: #5e6c84;
+`;
+const AuthorWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+`;
 function CardInfo(props: cardInfoProps) {
-  const [currentCard, setCurrentCard] = useState<cardType | any>({});
-  const [isChanged, setIsChanged] = useState(Boolean);
-  useEffect(() => {
-    if (props.currentCard.cardId === null) return;
-
-    const currCard: cardType = getCard(props.currentCard.taskId!, props.currentCard.cardId!);
-    setCurrentCard(currCard);
-  }, [props.currentCard]);
-  const keyPressHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCurrentCard((prevState: cardType) => {
-      return { ...prevState, description: e.target.value };
-    });
-    if (currentCard.description != '') setIsChanged(true);
-    else setIsChanged(false);
-  };
-  function getCard(taskId: string, cardId: string) {
-    const storage: Array<taskType> = Array.from(JSON.parse(localStorage.getItem('tasks')!)!);
-
-    const index = storage.findIndex((task) => task.id === props.currentCard.taskId);
-    const cardIndex = storage[index].cards.findIndex(
-      (card) => card.id === props.currentCard.cardId
-    );
-    return storage[index].cards[cardIndex];
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  function resize(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    setTimeout(function () {
+      textAreaRef.current!.style.cssText = 'height:auto; padding:0';
+      textAreaRef.current!.style.cssText = 'height:' + textAreaRef.current!.scrollHeight + 'px';
+    }, 1);
   }
-  const sendCardToStorage = (description: string) => {
-    const storage: Array<taskType> = Array.from(JSON.parse(localStorage.getItem('tasks')!)!);
-
-    const index = storage.findIndex((task) => task.id === props.currentCard.taskId);
-    const cardIndex = storage[index].cards.findIndex(
-      (card) => card.id === props.currentCard.cardId
-    );
-    storage[index].cards[cardIndex] = currentCard;
-    localStorage.setItem('tasks', JSON.stringify(storage));
-  };
   return (
     <InfoBody>
-      <TitleWrapper>
-        <Title>{currentCard.title}</Title>
-        <DescriptionWrapper>
-          <Description
-            onChange={keyPressHandler}
-            value={currentCard.description}
-            placeholder="enter description"
+      {props.currentCard.title === undefined ? (
+        <Spinner src={spinner} />
+      ) : (
+        <>
+          <TitleWrapper>
+            <Title>{props.currentCard.title}</Title>
+            <ColumnName>{props.columnName}</ColumnName>
+          </TitleWrapper>
+          <DescriptionWrapper>
+            <Description
+              ref={textAreaRef}
+              onKeyDown={resize}
+              onChange={props.keyPressHandler}
+              value={props.currentCard.description}
+              placeholder="enter description"
+              rows={1}
+            />
+          </DescriptionWrapper>
+          {props.isChangedDescription ? (
+            <ButtonWrapper>
+              <SaveDescriptionButton
+                onClick={() => {
+                  props.setDescription();
+                }}
+              >
+                Save
+              </SaveDescriptionButton>
+            </ButtonWrapper>
+          ) : null}
+          <AuthorWrapper>author:{props.currentCard.author}</AuthorWrapper>
+          <CommentsListContainer
+            userComment={props.userComment}
+            keyPressCommentHandler={props.keyPressCommentHandler}
+            currentCard={props.currentCard}
+            taskId={props.cardPosition.taskId!}
           />
-        </DescriptionWrapper>
-        {isChanged ? (
-          <SaveDescriptionButton onClick={() => sendCardToStorage(currentCard.description)}>
-            Save description
-          </SaveDescriptionButton>
-        ) : null}
-      </TitleWrapper>
+        </>
+      )}
     </InfoBody>
   );
 }
